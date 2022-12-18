@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+// use Symfony\Component\HttpFoundation\Session\Session;
 
 #[Route('/ticket')]
 class TicketController extends AbstractController
@@ -27,8 +28,10 @@ class TicketController extends AbstractController
         $ticket = new Ticket();
         $form = $this->createForm(TicketType::class, $ticket);
         $form->handleRequest($request);
+        $ticket->setUser($this -> getUser());
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $ticketRepository->save($ticket, true);
 
             return $this->redirectToRoute('app_ticket_index', [], Response::HTTP_SEE_OTHER);
@@ -72,6 +75,8 @@ class TicketController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$ticket->getId(), $request->request->get('_token'))) {
             $ticketRepository->remove($ticket, true);
         }
+
+        
 
         return $this->redirectToRoute('app_ticket_index', [], Response::HTTP_SEE_OTHER);
     }
